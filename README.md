@@ -24,7 +24,8 @@ yarn install
 ```
 
 ### Running in Development Mode
-Start the development server:
+
+#### Primary Method: Using the dev script
 ```bash
 # Using npm
 npm run dev
@@ -33,20 +34,44 @@ npm run dev
 yarn dev
 ```
 
-This will start the Vercel development server. The app will be available at `http://localhost:3000`.
+This starts a Node.js http-server on `http://localhost:3000` and automatically opens your browser.
 
-Alternatively, you can serve the static files using any local server:
+#### Alternative: Using Vercel Dev (if not in Vercel environment)
 ```bash
-# Using Python (if available)
-python -m http.server 8000
+# Using npm
+npm run dev:vercel
 
-# Using Node.js http-server (install globally first)
+# Using Yarn
+yarn dev:vercel
+```
+
+Note: If you get a "recursive invocation" error, it means you're already in a Vercel environment. Use the primary method above instead.
+
+#### Manual Server Options
+
+#### Recommended: Node.js http-server
+```bash
+# Install globally first
 # With npm: npm install -g http-server
 # With Yarn: yarn global add http-server
-http-server -p 8000
 
-# Using Live Server extension in VS Code
+# Run the server
+http-server -p 8000
+```
+
+#### VS Code Live Server (Recommended for VS Code users)
+```bash
+# Install the Live Server extension in VS Code
 # Right-click on index.html and select "Open with Live Server"
+```
+
+#### Alternative: Python (optional)
+```bash
+# Using Python 3 (if available)
+python3 -m http.server 8000
+
+# Using Python 2 (if available)
+python -m SimpleHTTPServer 8000
 ```
 
 ## Production Deployment

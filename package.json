@@ -4,7 +4,8 @@
   "description": "Special characters cleanup app",
   "main": "index.html",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "http-server -p 3000 -o",
+    "dev:vercel": "vercel dev",
     "build": "echo 'No build step required'",
     "start": "echo 'Static site - no start command needed'"
   },
