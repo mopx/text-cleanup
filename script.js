@@ -5,24 +5,24 @@ class TextCleanup {
         this.cleanBtn = document.getElementById('clean-btn');
         this.clearBtn = document.getElementById('clear-btn');
         this.copyBtn = document.getElementById('copy-btn');
-        
+
         this.initEventListeners();
     }
-    
+
     initEventListeners() {
         this.cleanBtn.addEventListener('click', () => this.cleanText());
         this.clearBtn.addEventListener('click', () => this.clearAll());
         this.copyBtn.addEventListener('click', () => this.copyToClipboard());
-        
+
         // Enable copy button when there's output text
         this.outputText.addEventListener('input', () => {
             this.copyBtn.disabled = this.outputText.value.trim() === '';
         });
-        
+
         // Real-time cleaning option (uncomment if desired)
         // this.inputText.addEventListener('input', () => this.cleanText());
     }
-    
+
     cleanText() {
         const input = this.inputText.value;
         if (!input.trim()) {
@@ -30,19 +30,19 @@ class TextCleanup {
             this.copyBtn.disabled = true;
             return;
         }
-        
+
         let cleaned = input;
-        
+
         // Remove various types of hidden and special characters
         cleaned = this.removeHiddenCharacters(cleaned);
         cleaned = this.normalizeWhitespace(cleaned);
         cleaned = this.removeFormatting(cleaned);
         cleaned = this.cleanSpecialCharacters(cleaned);
-        
+
         this.outputText.value = cleaned;
         this.copyBtn.disabled = false;
     }
-    
+
     removeHiddenCharacters(text) {
         return text
             // Remove zero-width characters
@@ -56,7 +56,7 @@ class TextCleanup {
             // Remove control characters (except tab, newline, carriage return)
             .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '');
     }
-    
+
     normalizeWhitespace(text) {
         return text
             // Convert various dash types to regular dash
@@ -64,16 +64,14 @@ class TextCleanup {
             // Convert smart quotes to regular quotes
             .replace(/[""]/g, '"')
             .replace(/['']/g, "'")
-            // Normalize multiple spaces to single space
-            .replace(/[ ]+/g, ' ')
-            // Normalize multiple newlines (keep at most 2 consecutive)
-            .replace(/\n{3,}/g, '\n\n')
+            // Normalize multiple spaces to single space (but preserve newlines)
+            .replace(/[ \t]+/g, ' ')
             // Remove trailing spaces from lines
-            .replace(/[ ]+$/gm, '')
+            .replace(/[ \t]+$/gm, '')
             // Remove leading spaces from lines (optional)
-            .replace(/^[ ]+/gm, '');
+            .replace(/^[ \t]+/gm, '');
     }
-    
+
     removeFormatting(text) {
         return text
             // Remove common AI/formatting artifacts
@@ -86,31 +84,31 @@ class TextCleanup {
             .replace(/[\u2022\u25E6\u2043\u2219]/g, '•') // Normalize bullet points
             .replace(/[\u2013\u2014]/g, '-'); // Normalize dashes
     }
-    
+
     cleanSpecialCharacters(text) {
         return text
             // Remove or replace problematic characters
             .replace(/[^\x00-\x7F\u00A0-\u024F\u0400-\u04FF\u1E00-\u1EFF\u2000-\u206F\u20A0-\u20CF\u2100-\u214F\u2190-\u21FF]/g, '')
-            // Clean up any remaining multiple spaces
-            .replace(/\s+/g, ' ')
-            // Trim the final result
-            .trim();
+            // Clean up any remaining multiple spaces (but preserve newlines)
+            .replace(/[ \t]+/g, ' ')
+            // Trim spaces from beginning and end of each line
+            .replace(/^[ \t]+|[ \t]+$/gm, '');
     }
-    
+
     clearAll() {
         this.inputText.value = '';
         this.outputText.value = '';
         this.copyBtn.disabled = true;
         this.inputText.focus();
     }
-    
+
     async copyToClipboard() {
         const text = this.outputText.value;
-        
+
         if (!text) {
             return;
         }
-        
+
         try {
             if (navigator.clipboard && window.isSecureContext) {
                 // Use modern clipboard API if available
@@ -119,7 +117,7 @@ class TextCleanup {
                 // Fallback for older browsers or non-secure contexts
                 this.fallbackCopyToClipboard(text);
             }
-            
+
             // Visual feedback
             this.showCopyFeedback();
         } catch (err) {
@@ -128,7 +126,7 @@ class TextCleanup {
             this.fallbackCopyToClipboard(text);
         }
     }
-    
+
     fallbackCopyToClipboard(text) {
         const textArea = document.createElement('textarea');
         textArea.value = text;
@@ -138,7 +136,7 @@ class TextCleanup {
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        
+
         try {
             document.execCommand('copy');
             this.showCopyFeedback();
@@ -148,12 +146,12 @@ class TextCleanup {
             document.body.removeChild(textArea);
         }
     }
-    
+
     showCopyFeedback() {
         const originalText = this.copyBtn.textContent;
         this.copyBtn.textContent = 'Copied!';
         this.copyBtn.classList.add('copied');
-        
+
         setTimeout(() => {
             this.copyBtn.textContent = originalText;
             this.copyBtn.classList.remove('copied');
