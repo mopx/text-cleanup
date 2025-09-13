@@ -12,27 +12,27 @@
             <h1>Text Cleanup Tool</h1>
             <p>Clean your text from formatting, special characters, and hidden AI characters</p>
         </header>
-        
+
         <main>
             <div class="input-section">
                 <label for="input-text">Paste your text here:</label>
-                <textarea 
-                    id="input-text" 
+                <textarea
+                    id="input-text"
                     placeholder="Paste your text with formatting and special characters here..."
                     rows="12"
                 ></textarea>
             </div>
-            
+
             <div class="controls">
                 <button id="clean-btn" class="primary-btn">Clean Text</button>
                 <button id="clear-btn" class="secondary-btn">Clear All</button>
             </div>
-            
+
             <div class="output-section">
                 <label for="output-text">Cleaned text:</label>
                 <div class="output-container">
-                    <textarea 
-                        id="output-text" 
+                    <textarea
+                        id="output-text"
                         placeholder="Cleaned text will appear here..."
                         rows="12"
                         readonly
@@ -41,12 +41,19 @@
                 </div>
             </div>
         </main>
-        
+
         <footer>
             <p>No data is logged or stored. All processing happens in your browser.</p>
+            <div class="repo-info">
+                <p>
+                    Created by <a href="https://github.com/mopx" target="_blank" rel="noopener noreferrer">@mopx</a> •
+                    <a href="https://github.com/mopx/text-cleanup" target="_blank" rel="noopener noreferrer">View on GitHub</a> •
+                    Open Source
+                </p>
+            </div>
         </footer>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
 </html>

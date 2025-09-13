@@ -156,27 +156,46 @@ footer {
     font-size: 0.9rem;
 }
 
+.repo-info {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.repo-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #95a5a6;
+}
+
+.repo-info a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.repo-info a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .container {
         padding: 15px;
     }
-    
+
     header h1 {
         font-size: 2rem;
     }
-    
+
     .controls {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .primary-btn,
     .secondary-btn {
         width: 200px;
-    }
-    
-    textarea {
-        rows: 8;
     }
 }

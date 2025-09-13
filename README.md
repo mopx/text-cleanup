@@ -1,5 +1,25 @@
 # text-cleanup
-Special characters cleanup app
+
+A simple, privacy-focused web application for cleaning text from unwanted formatting, special characters, and hidden artifacts commonly found when copying from AI tools, PDFs, websites, and documents.
+
+## About
+
+This tool helps you quickly clean up messy text by removing:
+- 🧹 Hidden and zero-width characters
+- 📝 Smart quotes and special punctuation
+- 🎨 Markdown formatting artifacts
+- 👻 Invisible Unicode characters
+- 📄 Copy-paste formatting remnants
+- 🤖 AI-generated text artifacts
+
+**Privacy-focused**: All processing happens locally in your browser - no data is sent to any servers.
+
+## Author
+
+Created by **[@mopx](https://github.com/mopx)**
+
+- GitHub: [github.com/mopx](https://github.com/mopx)
+- Repository: [github.com/mopx/text-cleanup](https://github.com/mopx/text-cleanup)
 
 ## Development
 
