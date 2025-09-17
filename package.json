@@ -1,17 +1,33 @@
 {
   "name": "text-cleanup",
   "version": "1.0.0",
-  "description": "Special characters cleanup app",
-  "main": "index.html",
+  "description": "Clean text from unwanted formatting, special characters, and hidden artifacts. Available as web app and CLI tool.",
+  "main": "lib/text-cleaner.js",
+  "bin": {
+    "text-cleanup": "./bin/text-cleanup"
+  },
   "scripts": {
     "dev": "http-server -p 3000 -o",
     "dev:vercel": "vercel dev",
     "build": "echo 'No build step required'",
-    "start": "echo 'Static site - no start command needed'"
+    "start": "echo 'Static site - no start command needed'",
+    "cli": "node bin/text-cleanup",
+    "test": "echo 'No tests defined yet'"
   },
-  "keywords": ["text", "cleanup", "special-characters", "formatting"],
+  "keywords": ["text", "cleanup", "special-characters", "formatting", "cli", "command-line"],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "index.html",
+    "script.js",
+    "styles.css",
+    "README.md"
+  ],
   "dependencies": {},
   "devDependencies": {}
 }
