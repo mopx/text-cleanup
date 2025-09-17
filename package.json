@@ -9,9 +9,15 @@
     "build": "echo 'No build step required'",
     "start": "echo 'Static site - no start command needed'"
   },
-  "keywords": ["text", "cleanup", "special-characters", "formatting"],
+  "keywords": [
+    "text",
+    "cleanup",
+    "special-characters",
+    "formatting"
+  ],
   "author": "",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
 }
