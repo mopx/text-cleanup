@@ -1,0 +1,283 @@
+#!/usr/bin/env node
+
+/**
+ * Text Cleanup CLI Tool
+ * Command line version of the text-cleanup web application
+ */
+
+const fs = require('fs');
+const path = require('path');
+const TextCleaner = require('../lib/text-cleaner');
+
+// Help text
+const HELP_TEXT = `
+Text Cleanup CLI Tool
+
+Clean text from unwanted formatting, special characters, and hidden artifacts
+commonly found when copying from AI tools, PDFs, websites, and documents.
+
+Usage:
+  text-cleanup [options] [input-file] [output-file]
+
+Options:
+  -h, --help     Show this help message
+  -v, --version  Show version information
+  -i, --input    Input file path (default: stdin)
+  -o, --output   Output file path (default: stdout)
+  --in-place     Modify the input file in place
+
+Examples:
+  # Clean text from stdin to stdout
+  echo "messy text" | text-cleanup
+
+  # Clean a file and output to another file
+  text-cleanup input.txt output.txt
+
+  # Clean a file in place
+  text-cleanup --in-place messy-file.txt
+
+  # Clean using explicit options
+  text-cleanup -i input.txt -o cleaned.txt
+
+Privacy: All processing happens locally - no data is sent to any servers.
+`;
+
+class TextCleanupCLI {
+    constructor() {
+        this.cleaner = new TextCleaner();
+        this.args = process.argv.slice(2);
+        this.options = {
+            help: false,
+            version: false,
+            input: null,
+            output: null,
+            inPlace: false
+        };
+    }
+
+    /**
+     * Parse command line arguments
+     */
+    parseArgs() {
+        let i = 0;
+        const positionalArgs = [];
+
+        while (i < this.args.length) {
+            const arg = this.args[i];
+
+            switch (arg) {
+                case '-h':
+                case '--help':
+                    this.options.help = true;
+                    break;
+                
+                case '-v':
+                case '--version':
+                    this.options.version = true;
+                    break;
+
+                case '-i':
+                case '--input':
+                    if (i + 1 < this.args.length) {
+                        this.options.input = this.args[i + 1];
+                        i++; // Skip next argument as it's the value
+                    } else {
+                        this.error('--input option requires a file path');
+                    }
+                    break;
+
+                case '-o':
+                case '--output':
+                    if (i + 1 < this.args.length) {
+                        this.options.output = this.args[i + 1];
+                        i++; // Skip next argument as it's the value
+                    } else {
+                        this.error('--output option requires a file path');
+                    }
+                    break;
+
+                case '--in-place':
+                    this.options.inPlace = true;
+                    break;
+
+                default:
+                    if (arg.startsWith('-')) {
+                        this.error(`Unknown option: ${arg}`);
+                    } else {
+                        positionalArgs.push(arg);
+                    }
+                    break;
+            }
+            i++;
+        }
+
+        // Handle positional arguments (input-file output-file)
+        if (positionalArgs.length > 0) {
+            this.options.input = positionalArgs[0];
+        }
+        if (positionalArgs.length > 1) {
+            this.options.output = positionalArgs[1];
+        }
+
+        // Validate options
+        if (this.options.inPlace && this.options.output) {
+            this.error('Cannot use --in-place with explicit output file');
+        }
+
+        if (this.options.inPlace && !this.options.input) {
+            this.error('--in-place requires an input file');
+        }
+
+        if (this.options.inPlace) {
+            this.options.output = this.options.input;
+        }
+    }
+
+    /**
+     * Show error message and exit
+     */
+    error(message) {
+        console.error(`Error: ${message}`);
+        console.error('Use --help for usage information');
+        process.exit(1);
+    }
+
+    /**
+     * Show help text
+     */
+    showHelp() {
+        console.log(HELP_TEXT);
+        process.exit(0);
+    }
+
+    /**
+     * Show version information
+     */
+    showVersion() {
+        try {
+            const packagePath = path.join(__dirname, '../package.json');
+            const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+            console.log(`text-cleanup v${packageJson.version}`);
+        } catch (err) {
+            console.log('text-cleanup');
+        }
+        process.exit(0);
+    }
+
+    /**
+     * Read input text from file or stdin
+     */
+    async readInput() {
+        return new Promise((resolve, reject) => {
+            if (this.options.input) {
+                // Read from file
+                try {
+                    if (!fs.existsSync(this.options.input)) {
+                        reject(new Error(`Input file does not exist: ${this.options.input}`));
+                        return;
+                    }
+                    const content = fs.readFileSync(this.options.input, 'utf8');
+                    resolve(content);
+                } catch (err) {
+                    reject(new Error(`Failed to read input file: ${err.message}`));
+                }
+            } else {
+                // Read from stdin
+                let input = '';
+                process.stdin.setEncoding('utf8');
+                
+                process.stdin.on('data', (chunk) => {
+                    input += chunk;
+                });
+
+                process.stdin.on('end', () => {
+                    resolve(input);
+                });
+
+                process.stdin.on('error', (err) => {
+                    reject(new Error(`Failed to read from stdin: ${err.message}`));
+                });
+
+                // Check if stdin has data
+                if (process.stdin.isTTY) {
+                    reject(new Error('No input provided. Use --help for usage information.'));
+                }
+            }
+        });
+    }
+
+    /**
+     * Write output text to file or stdout
+     */
+    async writeOutput(text) {
+        return new Promise((resolve, reject) => {
+            if (this.options.output) {
+                // Write to file
+                try {
+                    // Ensure output directory exists
+                    const outputDir = path.dirname(this.options.output);
+                    if (outputDir !== '.' && !fs.existsSync(outputDir)) {
+                        fs.mkdirSync(outputDir, { recursive: true });
+                    }
+
+                    fs.writeFileSync(this.options.output, text, 'utf8');
+                    resolve();
+                } catch (err) {
+                    reject(new Error(`Failed to write output file: ${err.message}`));
+                }
+            } else {
+                // Write to stdout
+                process.stdout.write(text);
+                resolve();
+            }
+        });
+    }
+
+    /**
+     * Main execution function
+     */
+    async run() {
+        try {
+            this.parseArgs();
+
+            if (this.options.help) {
+                this.showHelp();
+            }
+
+            if (this.options.version) {
+                this.showVersion();
+            }
+
+            // Read input
+            const inputText = await this.readInput();
+
+            // Clean the text
+            const cleanedText = this.cleaner.cleanText(inputText);
+
+            // Write output
+            await this.writeOutput(cleanedText);
+
+            // Show success message for file operations
+            if (this.options.output) {
+                if (this.options.inPlace) {
+                    console.error(`✓ Cleaned text in place: ${this.options.input}`);
+                } else {
+                    console.error(`✓ Cleaned text written to: ${this.options.output}`);
+                }
+            }
+
+            process.exit(0);
+        } catch (err) {
+            console.error(`Error: ${err.message}`);
+            process.exit(1);
+        }
+    }
+}
+
+// Run the CLI if this file is executed directly
+if (require.main === module) {
+    const cli = new TextCleanupCLI();
+    cli.run();
+}
+
+module.exports = TextCleanupCLI;
